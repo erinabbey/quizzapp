@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-undef */
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import { Questions, StartQuiz } from './components';
+import { Questions, StartQuiz, Timer } from './components';
 
 // let cate = 8;
 // let mount = 5;
@@ -12,20 +12,33 @@ const App = () => {
   const [score, setScore] = useState(0);
   const [isEnded, setIsEnded] = useState(false);
   const [viewAnswer, setviewAnswer] = useState(false);
+  const [seconds, setSeconds] = useState(3);
 
+  const handleTimer = () => {
+    let intervalID = setInterval(() => {
+      if (seconds > 0) {
+        setSeconds((seconds) => seconds - 1);
+      }
+      if (seconds === 0) {
+        clearInterval(intervalID);
+        setSeconds(3);
+        setCurrentIndex(currentIndex + 1);
+      }
+    }, 1000);
+  };
   // check answer
   const handleClick = (answer) => {
+    // check the answer
+    // show another question
     const nextIndex = currentIndex + 1;
     setCurrentIndex(nextIndex);
     if (answer === questions[currentIndex].correct_answer) {
       setScore(score + 1);
     }
+    // change score if correct
     if (nextIndex >= questions.length) {
       setIsEnded(true);
     }
-    // check the answer
-    // show another question
-    // change score if correct
   };
 
   const handleNewGame = () => {
@@ -55,6 +68,7 @@ const App = () => {
         setQuestions(data.results);
         console.log('questions', data);
       });
+    // handleTimer();
   }, []);
   // console.log(questions.length);
 
@@ -70,6 +84,8 @@ const App = () => {
     </div>
   ) : questions.length > 0 ? (
     <div>
+      <Timer />
+      {/* {seconds} */}
       <Questions
         viewAnswer={viewAnswer}
         handleClick={handleClick}
